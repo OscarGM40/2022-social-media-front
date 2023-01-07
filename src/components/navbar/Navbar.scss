@@ -11,6 +11,7 @@
     // fijate que position sticky necesita de un ancla al menos(top 0 nos valdrá perfectamente,solo necesita una)
     position: sticky;
     top: 0;
+    z-index: 99;
     background-color: themed("bg");
     color: themed("textColor");
 
@@ -25,6 +26,9 @@
         color: themed("logo");
       }
       .search {
+        @include mobile {
+          display: none;
+        }
         display: flex;
         align-items: center;
         gap: 10px;
@@ -36,11 +40,24 @@
           width: 500px;
           border: none;
           background-color: transparent;
-          color: themed("textColor")
+          color: themed("textColor");
+          @include tablet {
+            width: 200px;
+          }
         }
       }
     }
     .right {
+      @include mobile {
+        display: none;
+      }
+
+      & :not(div > *) {
+        @include tablet {
+          display: none;
+        }
+      }
+
       display: flex;
       align-items: center;
       gap: 20px;
@@ -49,7 +66,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-
+        
         img {
           width: 30px;
           height: 30px;

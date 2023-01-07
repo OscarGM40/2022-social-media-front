@@ -26,9 +26,9 @@ const Navbar = () => {
         </Link>
         <HomeOutlined />
         {theme === "light" ? (
-          <DarkModeOutlined onClick={toggleTheme} />
+          <DarkModeOutlined onClick={toggleTheme} style={{cursor:'pointer'}}/>
         ) : (
-          <WbSunnyOutlined onClick={toggleTheme} />
+          <WbSunnyOutlined onClick={toggleTheme} style={{cursor:'pointer'}}/>
         )}
 
         <GridViewOutlined />
@@ -42,7 +42,7 @@ const Navbar = () => {
         <EmailOutlined />
         <NotificationsOutlined />
         <div className="user">
-          <img src={currentUser?.avatar || "src/assets/2.png"} alt="" />
+          <img src={currentUser?.profilePic || "src/assets/2.png"} alt="" />
           <span>{currentUser?.name}</span>
         </div>
       </div>

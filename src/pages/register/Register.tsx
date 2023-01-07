@@ -1,7 +1,41 @@
+import axios, { AxiosError } from "axios";
+import { ChangeEvent, MouseEvent, useState } from "react";
 import { Link } from "react-router-dom";
+import { axiosWithoutCookie } from "../../helpers/customAxios";
 import "./Register.scss";
 
 const Register = () => {
+  const [inputs, setInputs] = useState({
+    username: "",
+    email: "",
+    password: "",
+    name: "",
+  });
+  const [err, setErr] = useState<AxiosError<any, any>>();
+
+  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
+    setInputs((prev) => ({
+      ...prev,
+      [evt.target.name]: evt.target.value,
+    }));
+  };
+  const handleRegister = async (evt: MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    if (!inputs.username || !inputs.name) return;
+    try {
+      const { data } = await axiosWithoutCookie.post("/auth/register", inputs);
+      console.log({ data });
+    } catch (err) {
+      const error = err as Error | AxiosError;
+      if (!axios.isAxiosError(error)) {
+        // do whatever you want with native error
+        console.log(error);
+      }
+      if (axios.isAxiosError(error)) {
+        setErr(error);
+      }
+    }
+  };
   return (
     <div className="register">
       <div className="card">
@@ -20,11 +54,22 @@ const Register = () => {
         <div className="right">
           <h1>Register</h1>
           <form>
-            <input type="text" placeholder="Enter username" />
-            <input type="email" placeholder="Enter email" />
-            <input type="password" placeholder="Enter password" />
-            <input type="text" placeholder="Enter name" />
-            <button>Register</button>
+            <input
+              onChange={handleChange}
+              name="username"
+              type="text"
+              placeholder="Enter username"
+            />
+            <input onChange={handleChange} name="email" type="email" placeholder="Enter email" />
+            <input
+              onChange={handleChange}
+              name="password"
+              type="password"
+              placeholder="Enter password"
+            />
+            <input onChange={handleChange} name="name" type="text" placeholder="Enter name" />
+            <>{err && err?.response?.data}</>
+            <button onClick={handleRegister}>Register</button>
           </form>
         </div>
       </div>

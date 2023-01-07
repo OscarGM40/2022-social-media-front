@@ -23,7 +23,7 @@ const LeftBar = () => {
         {/* upper menu */}
         <div className="menu">
           <div className="user">
-            <img src={currentUser?.avatar || "src/assets/new-social-login.jpeg"} alt="avatar" />
+            <img src={currentUser?.profilePic || "src/assets/new-social-login.jpeg"} alt="avatar" />
             <span>{currentUser?.name}</span>
           </div>
           <div className="item">

@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useContext } from "react";
 import { Outlet } from "react-router-dom";
 import LeftBar from "../components/leftBar/LeftBar";
@@ -8,7 +9,9 @@ import "./Layout.scss";
 
 const Layout = () => {
   const { theme } = useContext(ThemeContext);
+  const client = new QueryClient();
   return (
+    <QueryClientProvider client={client}>
     <div className={`theme-${theme}`}>
       <Navbar />
       <div style={{ display: "flex" }}>
@@ -19,6 +22,7 @@ const Layout = () => {
         <RightBar />
       </div>
     </div>
+    </QueryClientProvider>
   );
 };
 

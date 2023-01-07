@@ -1,11 +1,8 @@
 import { FC, useEffect, useState } from "react";
+import { axiosWithoutCookie } from "../helpers/customAxios";
+import { User, UserLogin } from "../types/User.type";
 import { AuthContext } from "./AuthContext";
 
-export type User = {
-  id: number;
-  name: string;
-  avatar: string;
-};
 interface AuthProviderProps {
   children: React.ReactNode;
 }
@@ -19,13 +16,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(currentUser));
   }, [currentUser]);
 
-  const login = () => {
-    setCurrentUser((p) => ({
-      ...p,
-      id: 1,
-      name: "pepe",
-      avatar: "src/assets/1.png",
-    }));
+  const login = async (inputs: UserLogin): Promise<void> => {
+    const { data } = await axiosWithoutCookie.post<User>("/auth/login", inputs);
+    setCurrentUser(data);
   };
 
   return (
