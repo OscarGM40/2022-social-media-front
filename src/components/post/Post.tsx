@@ -12,7 +12,7 @@ import Comments from "../comments/Comments";
 import moment from "moment";
 import { IPost } from "../../types/Post.type";
 import { axiosWithCookie } from "../../helpers/customAxios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 
 interface PostProps {
@@ -20,13 +20,51 @@ interface PostProps {
 }
 const Post = ({ post }: PostProps) => {
   const [commentOpen, setCommentOpen] = useState(false);
-   const { currentUser } = useContext(AuthContext);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const { error, data } = useQuery(["likes",post.id], () =>
-    axiosWithCookie.get(`/likes?postId=${post.id}`).then((r) => r.data),
+  const { currentUser } = useContext(AuthContext);
+
+  const { error, data } = useQuery(
+    ["likes", post.id],
+    () => axiosWithCookie.get(`/likes?postId=${post.id}`).then((r) => r.data),
+    {
+      retry: false,
+    },
   );
 
-  let liked = false;
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation(
+    (liked: boolean) => {
+      if (liked) return axiosWithCookie.delete(`/likes?postId=${post.id}`);
+      return axiosWithCookie.post(`/likes`, { postId: post.id });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["likes", post.id]);
+      },
+    },
+  );
+
+  const deleteMutation = useMutation(
+    (postId:number) => {
+      return axiosWithCookie.delete("/posts/" + postId);
+    },
+    {
+      onSuccess: () => {
+        // Invalidate and refetch
+        queryClient.invalidateQueries(["posts"]);
+      },
+    },
+  );
+
+  const handleLike = () => {
+    mutation.mutate(data.includes(currentUser?.id));
+  };
+
+    const handleDelete = () => {
+      deleteMutation.mutate(post.id);
+    };
 
   if (error) return <h2>Something went wrong</h2>;
   return (
@@ -34,7 +72,7 @@ const Post = ({ post }: PostProps) => {
       <div className="container">
         <div className="user">
           <div className="userInfo">
-            <img src={post.profilePic || "src/assets/2.png"} alt="profilePic" />
+            <img src={"/upload/" + post?.profilePic || "/src/assets/2.png"} alt="profilePic" />
             <div className="details">
               <Link
                 to={`/profile/${post.userId}`}
@@ -45,7 +83,10 @@ const Post = ({ post }: PostProps) => {
               <span className="date">{moment(post.createdAt).fromNow()}</span>
             </div>
           </div>
-          <MoreHorizIcon />
+          <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} style={{cursor:'pointer'}}/>
+          {menuOpen && post.userId === currentUser?.id && (
+            <button onClick={handleDelete}>delete</button>
+          )}
         </div>
         <div className="content">
           <p>{post.description}</p>
@@ -53,9 +94,11 @@ const Post = ({ post }: PostProps) => {
         </div>
         <div className="info">
           <div className="item">
-            {data && data.includes(currentUser?.id) 
-            ? <FavoriteOutlined style={{ color: "red" }} /> 
-            : <FavoriteBorderOutlined />}
+            {data && data.includes(currentUser?.id) ? (
+              <FavoriteOutlined style={{ color: "red" }} onClick={handleLike} />
+            ) : (
+              <FavoriteBorderOutlined onClick={handleLike} />
+            )}
             {data && data.length} Likes
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>

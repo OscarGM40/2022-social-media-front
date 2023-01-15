@@ -9,62 +9,114 @@ import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosWithCookie } from "../../helpers/customAxios";
+import { useLocation } from "react-router-dom";
+import { User } from "../../types/User.type";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext, useState } from "react";
+import Update from "../../components/update/Update";
 
 const Profile = () => {
+  // realmente no me vale el currentUser,ya que queremos hacer fetch del user que se está visitando
+  const [openUpdate, setOpenUpdate] = useState(false);
+
+  const userId = useLocation().pathname.split("/")[2];
+  // pero si lo necesitamos para saber si estamos en nuestro perfil o no
+  const { currentUser } = useContext(AuthContext);
+
+  const { isLoading, error, data } = useQuery(
+    ["user", userId],
+    () => axiosWithCookie.get<User>(`/users/find/${userId}`).then((r) => r.data),
+    {
+      retry: false,
+    },
+  );
+
+  const { data: relationshipData } = useQuery(
+    ["relationship"],
+    () => axiosWithCookie.get(`/relationships?followedUserId=${userId}`).then((r) => r.data),
+    {
+      retry: false,
+    },
+  );
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation(
+    (following: boolean) => {
+      if (following) return axiosWithCookie.delete(`/relationships?userId=${userId}`);
+      return axiosWithCookie.post(`/relationships`, { userId });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["relationship"]);
+      },
+    },
+  );
+
+  const handleFollow = () => {
+    mutation.mutate(relationshipData.includes(currentUser?.id));
+  };
+
   return (
     <div className="profile">
-      <div className="images">
-        <img
-          src="https://images.pexels.com/photos/13440765/pexels-photo-13440765.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt=""
-          className="cover"
-        />
-        <img
-          src="https://images.pexels.com/photos/14028501/pexels-photo-14028501.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load"
-          alt=""
-          className="profilePic"
-        />
-      </div>
-      <div className="profileContainer">
-        <div className="uInfo">
-          <div className="left">
-            <a href="http://facebook.com">
-              <FacebookTwoToneIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <InstagramIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <TwitterIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <LinkedInIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <PinterestIcon fontSize="large" />
-            </a>
+      {isLoading ? (
+        "loading"
+      ) : (
+        <>
+          <div className="images">
+            <img src={"/upload/" + data?.coverPic} alt="" className="cover" />
+            <img src={"/upload/" + data?.profilePic} alt="" className="profilePic" />
           </div>
-          <div className="center">
-            <span>Jane Doe</span>
-            <div className="info">
-              <div className="item">
-                <PlaceIcon />
-                <span>USA</span>
+          <div className="profileContainer">
+            <div className="uInfo">
+              <div className="left">
+                <a href="http://facebook.com">
+                  <FacebookTwoToneIcon fontSize="large" />
+                </a>
+                <a href="http://facebook.com">
+                  <InstagramIcon fontSize="large" />
+                </a>
+                <a href="http://facebook.com">
+                  <TwitterIcon fontSize="large" />
+                </a>
+                <a href="http://facebook.com">
+                  <LinkedInIcon fontSize="large" />
+                </a>
+                <a href="http://facebook.com">
+                  <PinterestIcon fontSize="large" />
+                </a>
               </div>
-              <div className="item">
-                <LanguageIcon />
-                <span>lama.dev</span>
+              <div className="center">
+                <span>{data?.name}</span>
+                <div className="info">
+                  <div className="item">
+                    <PlaceIcon />
+                    <span>{data?.city ?? "New York"}</span>
+                  </div>
+                  <div className="item">
+                    <LanguageIcon />
+                    <span>{data?.website ?? "lama.dev"}</span>
+                  </div>
+                </div>
+                {+userId === currentUser?.id ? (
+                  <button onClick={() => setOpenUpdate(true)}>update</button>
+                ) : (
+                  <button onClick={handleFollow}>
+                    {relationshipData?.includes(currentUser?.id) ? "Following" : "Follow"}
+                  </button>
+                )}
+              </div>
+              <div className="right">
+                <EmailOutlinedIcon />
+                <MoreVertIcon />
               </div>
             </div>
-            <button>follow</button>
+            <Posts userId={+userId} />
           </div>
-          <div className="right">
-            <EmailOutlinedIcon />
-            <MoreVertIcon />
-          </div>
-        </div>
-        <Posts />
-      </div>
+        </>
+      )}
+      {data && openUpdate && <Update setOpenUpdate={setOpenUpdate} user={data} />}
     </div>
   );
 };

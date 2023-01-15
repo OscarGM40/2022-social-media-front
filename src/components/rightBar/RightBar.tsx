@@ -10,7 +10,7 @@ const RightBar = () => {
           {/* user 1 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/1.png" alt="" />
               <span>Jane Doe</span>
             </div>
             <div className="buttons">
@@ -21,7 +21,7 @@ const RightBar = () => {
           {/* user 2 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/2.png" alt="" />
               <span>John Doe</span>
             </div>
             <div className="buttons">
@@ -36,43 +36,43 @@ const RightBar = () => {
           {/* milestone 1 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/2.png" alt="" />
               <p>
                 <span>Jane Doe</span>
                 {` `}
                 changed their cover picture
               </p>
             </div>
-            <span>1 min ago</span>
+            <span>2 min ago</span>
           </div>
           {/* milestone 2 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/2.png" alt="" />
               <p>
                 <span>Jane Doe</span>
                 {` `}
                 changed their cover picture
               </p>
             </div>
-            <span>1 min ago</span>
+            <span>4 min ago</span>
           </div>
           {/* milestone 3 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/1.png" alt="" />
               <p>
                 <span>Jane Doe</span>
                 {` `}
                 changed their cover picture
               </p>
             </div>
-            <span>1 min ago</span>
+            <span>6 min ago</span>
           </div>
           {/* milestone 4 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/1.png" alt="" />
               <p>
                 <span>Jane Doe</span>
                 {` `}
@@ -88,7 +88,7 @@ const RightBar = () => {
           {/* friend 1 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/2.png" alt="" />
               <div className="online" />
               <span>Jane Doe</span>
             </div>
@@ -96,7 +96,7 @@ const RightBar = () => {
           {/* friend 2 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/1.png" alt="" />
               <div className="online" />
               <span>John Doe</span>
             </div>
@@ -104,7 +104,7 @@ const RightBar = () => {
           {/* friend 3 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/9.png" alt="" />
               <div className="online" />
               <span>June Doe</span>
             </div>
@@ -112,7 +112,7 @@ const RightBar = () => {
           {/* friend 4 */}
           <div className="user">
             <div className="userInfo">
-              <img src="src/assets/1.png" alt="" />
+              <img src="/src/assets/8.png" alt="" />
               <div className="online" />
               <span>Pacman</span>
             </div>

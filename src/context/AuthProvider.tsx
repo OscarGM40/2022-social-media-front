@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { axiosWithoutCookie } from "../helpers/customAxios";
+import { axiosWithCookie, axiosWithoutCookie } from "../helpers/customAxios";
 import { User, UserLogin } from "../types/User.type";
 import { AuthContext } from "./AuthContext";
 
@@ -13,12 +13,15 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   );
 
   useEffect(() => {
+  },[currentUser])
+  useEffect(() => {
     localStorage.setItem("user", JSON.stringify(currentUser));
   }, [currentUser]);
-
+  
   const login = async (inputs: UserLogin): Promise<void> => {
     const { data } = await axiosWithoutCookie.post<User>("/auth/login", inputs);
-    setCurrentUser(data);
+    const user = await axiosWithCookie.get<User>(`/users/find/${data.id}`).then((r) => r.data);
+    setCurrentUser(user || data);
   };
 
   return (
